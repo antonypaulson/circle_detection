@@ -16,14 +16,10 @@ def noisy_circle(size, radius, noise):
     # Circle
     row = np.random.randint(size)
     col = np.random.randint(size)
-    rad = np.random.randint(2, max(2, radius))
+    rad = np.random.randint(4, max(4, radius))
     draw_circle(image, row, col, rad)
 
     return (row, col, rad), np.clip(image, 0, 1)
-
-def find_circle(img):
-    # Fill in this function
-    return 100, 100, 30
 
 def iou(params0, params1):
     row0, col0, rad0 = params0
@@ -34,3 +30,19 @@ def iou(params0, params1):
 
     return (shape0.intersection(shape1).area / shape0.union(shape1).area)
 
+def create_training_data(samples, image_size, max_radius, noise_level):
+    training_images = np.zeros((samples, image_size, image_size))
+    training_labels = np.zeros((samples, 3), dtype=np.float64)
+
+    image = np.zeros((image_size, image_size), dtype=np.float)
+    for i in range(samples):
+        params, image = noisy_circle(image_size, max_radius, noise_level)
+        training_images[i, :, :] = image
+        training_labels[i] = params
+
+    # Normalize to relative image coordinates: every image is size 1.0 x 1.0, pixels are stored as floats
+    # I like the idea of this, since it'd make generating a good loss function with different units easier.
+    # But I had trouble getting convergence on earlier versions. Maybe worth retrying.
+    #labels /= image_size
+
+    return training_images, training_labels

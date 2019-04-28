@@ -1,12 +1,14 @@
 import tensorflow as tf
 import numpy as np
 
+IMAGE_SIZE = 52
+
 # Adapted from Tensorflow mnist digit recognition example:
 # https://github.com/tensorflow/docs/blob/master/site/en/tutorials/estimators/cnn.ipynb
 def model_function(features, labels, mode):
     """Model function for CNN."""
     # Input layer
-    input_layer = tf.reshape(features["x"], [-1, 52, 52, 1])
+    input_layer = tf.reshape(features["x"], [-1, IMAGE_SIZE, IMAGE_SIZE, 1])
 
     # Convolutional, pooling layer 1
     conv1 = tf.layers.conv2d(
