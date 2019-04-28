@@ -8,30 +8,28 @@ from shapely.geometry.point import Point
 from skimage.draw import circle_perimeter_aa
 import matplotlib.pyplot as plt
 
-def draw_circle(img, row, col, rad):
+def draw_circle(image, row, col, rad):
     rr, cc, val = circle_perimeter_aa(row, col, rad)
-    valid = ((rr >= 0) & (rr < img.shape[0]) & (cc >= 0) & (cc < img.shape[1]))
-    img[rr[valid], cc[valid]] = val[valid]
+    valid = ((rr >= 0) & (rr < image.shape[0]) & (cc >= 0) & (cc < image.shape[1]))
+    image[rr[valid], cc[valid]] = val[valid]
 
+    return image
 
 def noisy_circle(size, radius, noise):
-    img = np.zeros((size, size), dtype=np.float)
+    image = np.zeros((size, size), dtype=np.float)
+    image += noise * np.random.rand(*image.shape)
 
     # Circle
     row = np.random.randint(size)
     col = np.random.randint(size)
     rad = np.random.randint(2, max(2, radius))
-    draw_circle(img, row, col, rad)
+    draw_circle(image, row, col, rad)
 
-    # Noise
-    img += noise * np.random.rand(*img.shape)
-    return (row, col, rad), img
-
+    return (row, col, rad), np.clip(image, 0, 1)
 
 def find_circle(img):
     # Fill in this function
     return 100, 100, 30
-
 
 def iou(params0, params1):
     row0, col0, rad0 = params0
@@ -130,7 +128,7 @@ def cnn_model_fn(features, labels, mode):
     return tf.estimator.EstimatorSpec(mode=mode, loss=loss, eval_metric_ops=eval_metric_ops)
 
 if __name__ == '__main__':
-    training_steps = 3000
+    training_steps = 1
     image_size = 52
 
     # Load training and eval data
