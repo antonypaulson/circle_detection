@@ -36,16 +36,25 @@ if __name__ == '__main__':
         true_x, true_y, true_r = inference_labels[i]
         ious[i] = shapes.iou((true_x, true_y, true_r), (prediction[0], prediction[1], prediction[2]))
     print()
-    print("Average IOU over {0} samples: {1:2.2f} \n".format(number, np.average(ious)))
+    print("{0} samples. Average IOU: {1:2.2f} Min IOU: {2:2.2f} \n".format(number, np.average(ious), np.min(ious)))
 
     for i, prediction in enumerate(inference_results):
         # Unwrap the Tensorflow output
         prediction = prediction['location']
+        prediction_int = [int(round(prediction[0])), int(round(prediction[1])), int(round(prediction[2]))]
+
         image = np.array(np.reshape(inference_data[i], (image_size, image_size)) * 256, dtype=np.uint8)
+
+        overlay_image = cv.cvtColor(np.copy(image), cv.COLOR_GRAY2BGR)
+        # Reverse the order of the coordinates to go from matrix indexing to image indexing
+        cv.circle(overlay_image, (prediction_int[1], prediction_int[0]), prediction_int[2], color=(200, 0, 255), thickness=2)
+        # Declare these outside the imshow() loop so they can be resized. See https://stackoverflow.com/questions/24842382/fitting-an-image-to-screen-using-imshow-opencv
+        cv.namedWindow("Raw Image", cv.WINDOW_NORMAL)
+        cv.namedWindow("Overlay Image", cv.WINDOW_NORMAL)
 
         true_x, true_y, true_r = inference_labels[i]
         print("-- True x, y, r: {0} {1} {2}".format(int(true_x), int(true_y), int(true_r)))
-        print("-- Pred x, y, r: {0} {1} {2}".format(int(round(prediction[0])), int(round(prediction[1])), int(round(prediction[2]))))
+        print("-- Pred x, y, r: {0} {1} {2}".format(prediction_int[0], prediction_int[1], prediction_int[2]))
         print("-- IOU: {0:2.2f} \n".format(shapes.iou((true_x, true_y, true_r), (prediction[0], prediction[1], prediction[2]))))
 
         while True:
@@ -56,4 +65,7 @@ if __name__ == '__main__':
             elif k == 'j' or k == 102 or k == 'f' or k == 106 or k == 65363:
                 break
 
-            cv.imshow("corrected", image)
+            cv.imshow("Raw Image", image)
+            cv.resizeWindow("Raw Image", 400, 400)
+            cv.imshow("Overlay Image", overlay_image)
+            cv.resizeWindow("Overlay Image", 400, 400)
