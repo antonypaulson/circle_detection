@@ -40,9 +40,7 @@ def create_training_data(samples, image_size, max_radius, noise_level):
         training_images[i, :, :] = image
         training_labels[i] = params
 
-    # Normalize to relative image coordinates: every image is size 1.0 x 1.0, pixels are stored as floats
-    # I like the idea of this, since it'd make generating a good loss function with different units easier.
-    # But I had trouble getting convergence on earlier versions. Maybe worth retrying.
-    #labels /= image_size
+    # Normalize to relative image coordinates: every image has dimensions 1.0 x 1.0, pixels are stored as floats
+    training_labels /= image_size
 
     return training_images, training_labels

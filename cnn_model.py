@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
 
-IMAGE_SIZE = 52
+IMAGE_SIZE = 64
 
 # Adapted from Tensorflow mnist digit recognition example:
 # https://github.com/tensorflow/docs/blob/master/site/en/tutorials/estimators/cnn.ipynb
@@ -31,7 +31,7 @@ def model_function(features, labels, mode):
     pool2 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[2, 2], strides=2)
 
     # Dense layer, 1024 units is unchanged from example
-    pool2_flat = tf.reshape(pool2, [-1, 13 * 13 * 64])
+    pool2_flat = tf.reshape(pool2, [-1, IMAGE_SIZE // 4 * IMAGE_SIZE // 4 * 64])
     dense = tf.layers.dense(inputs=pool2_flat, units=1024, activation=tf.nn.relu)
     dropout = tf.layers.dropout(inputs=dense, rate=0.4, training=mode == tf.estimator.ModeKeys.TRAIN)
 
@@ -47,7 +47,7 @@ def model_function(features, labels, mode):
     loss = tf.losses.mean_squared_error(labels, output_layer)
 
     if mode == tf.estimator.ModeKeys.TRAIN:
-        optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.001)
+        optimizer = tf.train.GradientDescentOptimizer(learning_rate=.08)
         train_op = optimizer.minimize(loss=loss, global_step=tf.train.get_global_step())
         return tf.estimator.EstimatorSpec(mode=mode, loss=loss, train_op=train_op)
 
