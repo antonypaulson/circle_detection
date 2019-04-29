@@ -7,8 +7,8 @@ from shapes import noisy_circle, create_training_data
 if __name__ == '__main__':
     tf.logging.set_verbosity(tf.logging.INFO)
 
-    model_pathed_name = "./circle_finder_v4"
-    training_steps = 3000
+    model_pathed_name = "./circle_detection_model"
+    training_steps = 8000
     batch_size = 32
     eval_set_size = 500
 

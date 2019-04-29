@@ -8,10 +8,10 @@ import shapes
 import cnn_model
 
 if __name__ == '__main__':
-    number = 100
+    number = 1000
     model_path_name = "./circle_detection_model"
     image_size = cnn_model.IMAGE_SIZE
-    max_radius = 28
+    max_radius = 32
     noise_level = .5
 
     tf.logging.set_verbosity(tf.logging.ERROR)
