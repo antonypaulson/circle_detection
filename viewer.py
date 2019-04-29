@@ -48,9 +48,13 @@ if __name__ == '__main__':
         overlay_image = cv.cvtColor(np.copy(image), cv.COLOR_GRAY2BGR)
         # Reverse the order of the coordinates to go from matrix indexing to image indexing
         cv.circle(overlay_image, (prediction_int[1], prediction_int[0]), prediction_int[2], color=(200, 0, 255), thickness=2)
-        # Declare these outside the imshow() loop so they can be resized. See https://stackoverflow.com/questions/24842382/fitting-an-image-to-screen-using-imshow-opencv
-        cv.namedWindow("Raw Image", cv.WINDOW_NORMAL)
-        cv.namedWindow("Overlay Image", cv.WINDOW_NORMAL)
+
+        upscale_factor = 6
+        upscaled_image = cv.resize(image, dsize=(0, 0), fx=upscale_factor, fy=upscale_factor, interpolation=cv.INTER_NEAREST)
+        overlay_image = cv.resize(overlay_image, dsize=(0, 0), fx=upscale_factor, fy=upscale_factor, interpolation=cv.INTER_NEAREST)
+
+        #cv.imwrite("upscaled.png", upscaled_image)
+        #cv.imwrite("overlay.png", overlay_image)
 
         true_x, true_y, true_r = cnn_model.IMAGE_SIZE * inference_labels[i]
         print("True x, y, r: {0} {1} {2}".format(int(true_x), int(true_y), int(true_r)))
@@ -65,7 +69,6 @@ if __name__ == '__main__':
             elif k == 'j' or k == 102 or k == 'f' or k == 106 or k == 65363:
                 break
 
-            cv.imshow("Raw Image", image)
-            cv.resizeWindow("Raw Image", 400, 400)
+            cv.imshow("Raw Image", upscaled_image)
             cv.imshow("Overlay Image", overlay_image)
-            cv.resizeWindow("Overlay Image", 400, 400)
+
