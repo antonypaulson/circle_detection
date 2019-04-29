@@ -36,7 +36,9 @@ if __name__ == '__main__':
         true_x, true_y, true_r = cnn_model.IMAGE_SIZE * inference_labels[i]
         ious[i] = shapes.iou((true_x, true_y, max(true_r, 1)), (prediction[0], prediction[1], prediction[2]))
     print()
-    print("{0} samples. Average IOU: {1:2.2f} Min IOU: {2:2.2f} \n".format(number, np.average(ious), np.min(ious)))
+    print("{0} samples. Average IOU: {1:2.2f} Min IOU: {2:2.2f}".format(number, np.average(ious), np.min(ious)))
+    print("Samples with IOU > .5: {0}%".format(100 * len(np.where(ious > .5)[0]) / number))
+    print("------------------------")
 
     for i, prediction in enumerate(inference_results):
         # Unwrap the Tensorflow output.
