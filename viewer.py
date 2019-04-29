@@ -34,14 +34,14 @@ if __name__ == '__main__':
     for i, prediction in enumerate(inference_results):
         prediction = cnn_model.IMAGE_SIZE * prediction['location']
         true_x, true_y, true_r = cnn_model.IMAGE_SIZE * inference_labels[i]
-        ious[i] = shapes.iou((true_x, true_y, true_r), (prediction[0], prediction[1], prediction[2]))
+        ious[i] = shapes.iou((true_x, true_y, max(true_r, 1)), (prediction[0], prediction[1], prediction[2]))
     print()
     print("{0} samples. Average IOU: {1:2.2f} Min IOU: {2:2.2f} \n".format(number, np.average(ious), np.min(ious)))
 
     for i, prediction in enumerate(inference_results):
-        # Unwrap the Tensorflow output
+        # Unwrap the Tensorflow output.
         prediction = cnn_model.IMAGE_SIZE * prediction['location']
-        prediction_int = [int(round(prediction[0])), int(round(prediction[1])), int(round(prediction[2]))]
+        prediction_int = [int(round(prediction[0])), int(round(prediction[1])), max(int(round(prediction[2])), 1)]
 
         image = np.array(np.reshape(inference_data[i], (image_size, image_size)) * 256, dtype=np.uint8)
 
