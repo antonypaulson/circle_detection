@@ -2,5 +2,26 @@
 .vscode
 .idea
 *.pyc
+__pycache__/
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+.env
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 *.mp4
 *.mkv
+
+# Trained weights — train locally, do not commit checkpoints
+circle_detection_model/
+circle_detection_model.keras
+*.keras
+*.h5
+*.ckpt
+checkpoint
+inference_output/
+smoke_output/
