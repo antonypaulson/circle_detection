@@ -4,23 +4,23 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
-import tensorflow as tf
 
-from circle_detection.model import (
+from circle_detection.constants import (
+    DEFAULT_BATCH_SIZE,
+    DEFAULT_EVAL_SAMPLES,
     DEFAULT_LEARNING_RATE,
     DEFAULT_MODEL_PATH,
+    DEFAULT_NOISE,
+    DEFAULT_STEPS,
     IMAGE_SIZE,
-    build_model,
-    compile_model,
 )
 from circle_detection.shapes import create_training_data
 
-DEFAULT_STEPS = 8000
-DEFAULT_BATCH_SIZE = 32
-DEFAULT_EVAL_SAMPLES = 500
-DEFAULT_NOISE = 0.5
+if TYPE_CHECKING:
+    import tensorflow as tf
 
 
 def add_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
@@ -72,6 +72,11 @@ def train(
     Matches the original Estimator loop: generate a finite set of images, then
     shuffle/repeat them for ``steps`` batches of ``batch_size``.
     """
+    from circle_detection import tf_config  # noqa: F401
+    import tensorflow as tf
+
+    from circle_detection.model import build_model, compile_model
+
     if seed is not None:
         np.random.seed(seed)
         tf.keras.utils.set_random_seed(seed)
@@ -97,7 +102,14 @@ def train(
     eval_ds = tf.data.Dataset.from_tensor_slices((x_eval, y_eval)).batch(batch_size)
 
     print(f"Training for {steps} steps (batch_size={batch_size}, lr={learning_rate})...")
-    model.fit(train_ds, steps_per_epoch=steps, epochs=1, validation_data=eval_ds, verbose=1)
+    model.fit(
+        train_ds,
+        steps_per_epoch=steps,
+        epochs=1,
+        validation_data=eval_ds,
+        verbose=1,
+        shuffle=False,
+    )
 
     dest = Path(model_path)
     dest.parent.mkdir(parents=True, exist_ok=True)
@@ -106,7 +118,7 @@ def train(
     return model
 
 
-def run(args: argparse.Namespace) -> tf.keras.Model:
+def run(args: argparse.Namespace):
     return train(
         model_path=args.model_path,
         steps=args.steps,

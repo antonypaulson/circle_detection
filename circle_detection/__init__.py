@@ -1,7 +1,6 @@
 """Detect circles against noise with a small CNN."""
 
-__version__ = "0.2.0"
+from circle_detection.constants import DEFAULT_MODEL_PATH, IMAGE_SIZE
 
-# Re-exported here so callers do not have to import TensorFlow to read constants.
-IMAGE_SIZE = 64
-DEFAULT_MODEL_PATH = "circle_detection_model.keras"
+__all__ = ["IMAGE_SIZE", "DEFAULT_MODEL_PATH"]
+__version__ = "0.2.0"

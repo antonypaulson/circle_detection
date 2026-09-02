@@ -6,10 +6,9 @@ import argparse
 import os
 import sys
 
-from circle_detection.infer import DEFAULT_INFER_SAMPLES, run_inference
-from circle_detection.model import DEFAULT_MODEL_PATH, IMAGE_SIZE
+from circle_detection.constants import DEFAULT_INFER_SAMPLES, DEFAULT_MODEL_PATH, DEFAULT_NOISE, IMAGE_SIZE
+from circle_detection.infer import run_inference
 from circle_detection.shapes import iou
-from circle_detection.train import DEFAULT_NOISE
 from circle_detection.visualize import (
     draw_prediction_overlay,
     image_to_uint8,

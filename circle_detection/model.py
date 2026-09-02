@@ -7,12 +7,20 @@ a 3-unit regression head for (row, col, radius).
 
 from __future__ import annotations
 
+from circle_detection import tf_config  # noqa: F401
 import tensorflow as tf
 
-IMAGE_SIZE = 64
-DEFAULT_MODEL_PATH = "circle_detection_model.keras"
-DEFAULT_LEARNING_RATE = 0.08
-DEFAULT_DROPOUT = 0.4
+from circle_detection.constants import DEFAULT_DROPOUT, DEFAULT_LEARNING_RATE, DEFAULT_MODEL_PATH, IMAGE_SIZE
+
+# Re-export so `from circle_detection.model import IMAGE_SIZE` still works.
+__all__ = [
+    "IMAGE_SIZE",
+    "DEFAULT_MODEL_PATH",
+    "DEFAULT_LEARNING_RATE",
+    "DEFAULT_DROPOUT",
+    "build_model",
+    "compile_model",
+]
 
 
 def build_model(image_size: int = IMAGE_SIZE, dropout_rate: float = DEFAULT_DROPOUT) -> tf.keras.Model:

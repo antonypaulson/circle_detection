@@ -4,16 +4,17 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
-import tensorflow as tf
 
-from circle_detection.model import DEFAULT_MODEL_PATH, IMAGE_SIZE
+from circle_detection.constants import DEFAULT_INFER_SAMPLES, DEFAULT_MODEL_PATH, DEFAULT_NOISE, IMAGE_SIZE
 from circle_detection.shapes import create_training_data, iou
-from circle_detection.train import DEFAULT_NOISE, prepare_xy
+from circle_detection.train import prepare_xy
 from circle_detection.visualize import save_overlay
 
-DEFAULT_INFER_SAMPLES = 100
+if TYPE_CHECKING:
+    import tensorflow as tf
 
 
 def add_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
@@ -41,6 +42,9 @@ def add_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
 
 
 def load_model(model_path: str) -> tf.keras.Model:
+    from circle_detection import tf_config  # noqa: F401
+    import tensorflow as tf
+
     path = Path(model_path)
     if not path.exists():
         raise FileNotFoundError(
@@ -50,7 +54,7 @@ def load_model(model_path: str) -> tf.keras.Model:
     return tf.keras.models.load_model(path)
 
 
-def predict_locations(model: tf.keras.Model, images: np.ndarray) -> np.ndarray:
+def predict_locations(model: Any, images: np.ndarray) -> np.ndarray:
     """Predict relative (row, col, radius) for images of shape (N, H, W) or (N, H, W, 1)."""
     x = np.asarray(images, dtype=np.float32)
     if x.ndim == 3:
@@ -91,7 +95,7 @@ def run_inference(
     save_dir: str | None = None,
     seed: int | None = None,
     max_save: int = 16,
-    model: tf.keras.Model | None = None,
+    model: Any | None = None,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """Evaluate a model on fresh synthetic circles.
 
